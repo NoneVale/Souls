@@ -1,0 +1,34 @@
+name: Souls
+version: ${version}
+main: net.nighthawkempires.souls.SoulsPlugin
+description: Nighthawk Empires' Souls Plugin.
+author: NoneVale_
+api-version: 1.15
+depend: [Core]
+commands:
+  extractsouls:
+    aliases: [extract]
+    usage: </command>
+    description: Extract Souls command for Nighthawk Empires' Souls Plugin.
+  soulchest:
+    usage: </command>
+    description: Soul Chest command for Nighthawk Empires' Souls Plugin.
+  soulcount:
+    aliases: [scount]
+    usage: </command>
+    description: Soul Count command for Nighthawk Empires' Souls Plugin.
+  souls:
+    aliases: [soul]
+    usage: </command>
+    description: Souls command for Nighthawk Empires' Souls Plugin.
+  soulshop:
+    usage: </command>
+    description: Soul Shop command for Nighthawk Empires' Souls Plugin.
+  soulsrankup:
+    aliases: [soulrankup, srankup]
+    usage: </command>
+    description: Souls Rankup command for Nighthawk Empires' Souls Plugin.
+  soultop:
+    aliases: [soulstop]
+    usage: </command>
+    description: Souls Top command for Nighthawk Empires' Souls Plugin.

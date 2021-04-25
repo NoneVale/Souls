@@ -1,8 +1,8 @@
 package net.nighthawkempires.souls.util;
 
-import net.nighthawkempires.core.particle.ParticleEffect;
 import net.nighthawkempires.souls.SoulsPlugin;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -25,7 +25,7 @@ public class ParticleUtil {
                         y = 0.5*t;
                         z = 0.4*(2*Math.PI-t)*0.5*sin(t + phi + i*Math.PI);
                         location1.add(x, y, z);
-                        ParticleEffect.ENCHANTMENT_TABLE.display(0, 0, 0, 0, 2, location1, 20.0);
+                        location1.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, location1, 2, 0, 0, 0);
                         location1.subtract(x,y,z);
                     }
                 }

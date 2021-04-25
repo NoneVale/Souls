@@ -40,7 +40,7 @@ public class SoulsCommand implements CommandExecutor {
             Player player = (Player) sender;
             UserModel userModel = getUserRegistry().getUser(player.getUniqueId());
 
-            if (!player.hasPermission("ne.souls")) {
+            if (!player.hasPermission("ne.souls") && !player.hasPermission("ne.souls.admin")) {
                 player.sendMessage(getMessages().getChatTag(NO_PERMS));
                 return true;
             }
@@ -71,6 +71,11 @@ public class SoulsCommand implements CommandExecutor {
                             return true;
                     }
                 case 2:
+                    if (!player.hasPermission("ne.souls.admin")) {
+                        player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
+                        return true;
+                    }
+
                     switch (args[0].toLowerCase()) {
                         case "reset":
                             switch (args[1].toLowerCase()) {
@@ -96,6 +101,10 @@ public class SoulsCommand implements CommandExecutor {
                             return true;
                     }
                 case 3:
+                    if (!player.hasPermission("ne.souls.admin")) {
+                        player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
+                        return true;
+                    }
 
                     switch (args[0].toLowerCase()) {
                         case "reset":
@@ -224,6 +233,11 @@ public class SoulsCommand implements CommandExecutor {
                             return true;
                     }
                 case 4:
+                    if (!player.hasPermission("ne.souls.admin")) {
+                        player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
+                        return true;
+                    }
+
                     switch (args[0].toLowerCase()) {
                         case "set":
                             String name = args[1];
@@ -290,7 +304,7 @@ public class SoulsCommand implements CommandExecutor {
                                     int amount = Integer.parseInt(args[3]);
                                     userModel.setMobSouls(userModel.getMobSouls() + amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have added " + GOLD + amount + GRAY + " souls to " +
-                                            GREEN + offlinePlayer.getPlayer() + "'s" + GRAY + " Mob Souls Balance."));
+                                            GREEN + offlinePlayer.getPlayer().getName() + "'s" + GRAY + " Mob Souls Balance."));
                                     if (offlinePlayer.isOnline()) {
                                         offlinePlayer.getPlayer().sendMessage(getMessages().getChatMessage(GOLD + String.valueOf(amount)
                                                 + GRAY + " souls have been added to your Mob Souls Balance."));
@@ -305,7 +319,7 @@ public class SoulsCommand implements CommandExecutor {
                                     amount = Integer.parseInt(args[3]);
                                     userModel.setPlayerSouls(userModel.getPlayerSouls() + amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have added " + GOLD + amount + GRAY + " souls to " +
-                                            GREEN + offlinePlayer.getPlayer() + "'s" + GRAY + " Player Souls Balance."));
+                                            GREEN + offlinePlayer.getPlayer().getName() + "'s" + GRAY + " Player Souls Balance."));
                                     if (offlinePlayer.isOnline()) {
                                         offlinePlayer.getPlayer().sendMessage(getMessages().getChatMessage(GOLD + String.valueOf(amount)
                                                 + GRAY + " souls have been added to your Player Souls Balance."));
@@ -335,7 +349,7 @@ public class SoulsCommand implements CommandExecutor {
                                     int amount = Integer.parseInt(args[3]);
                                     userModel.setMobSouls(userModel.getMobSouls() - amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have removed " + GOLD + amount + GRAY + " souls from " +
-                                            GREEN + offlinePlayer.getPlayer() + "'s" + GRAY +" Mob Souls Balance."));
+                                            GREEN + offlinePlayer.getPlayer().getName() + "'s" + GRAY +" Mob Souls Balance."));
                                     if (offlinePlayer.isOnline()) {
                                         offlinePlayer.getPlayer().sendMessage(getMessages().getChatMessage(GOLD + String.valueOf(amount)
                                                 + GRAY + " souls have been removed from your Mob Souls Balance."));
@@ -350,7 +364,7 @@ public class SoulsCommand implements CommandExecutor {
                                     amount = Integer.parseInt(args[3]);
                                     userModel.setPlayerSouls(userModel.getPlayerSouls() - amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have removed " + GOLD + amount + GRAY + " souls from " +
-                                            GREEN + offlinePlayer.getPlayer() + "'s" + GRAY +" Player Souls Balance."));
+                                            GREEN + offlinePlayer.getPlayer().getName() + "'s" + GRAY +" Player Souls Balance."));
                                     if (offlinePlayer.isOnline()) {
                                         offlinePlayer.getPlayer().sendMessage(getMessages().getChatMessage(GOLD + String.valueOf(amount)
                                                 + GRAY + " souls have been removed from your Player Souls Balance."));

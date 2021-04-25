@@ -16,6 +16,9 @@ import net.nighthawkempires.souls.enchantment.*;
 import net.nighthawkempires.souls.listener.InventoryListener;
 import net.nighthawkempires.souls.listener.PlayerListener;
 import net.nighthawkempires.souls.scoreboard.SoulsScoreboard;
+import net.nighthawkempires.souls.tabcompleters.SoulChestTabCompleter;
+import net.nighthawkempires.souls.tabcompleters.SoulTopTabCompleter;
+import net.nighthawkempires.souls.tabcompleters.SoulsTabCompleter;
 import net.nighthawkempires.souls.user.registry.MUserRegistry;
 import net.nighthawkempires.souls.user.registry.UserRegistry;
 import org.bukkit.*;
@@ -123,6 +126,12 @@ public class SoulsPlugin extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new InventoryListener(), this);
         pm.registerEvents(new PlayerListener(), this);
+    }
+
+    public void registerTabCompleters() {
+        this.getCommand("soulchest").setTabCompleter(new SoulChestTabCompleter());
+        this.getCommand("souls").setTabCompleter(new SoulsTabCompleter());
+        this.getCommand("soultop").setTabCompleter(new SoulTopTabCompleter());
     }
 
     public static UserRegistry getUserRegistry() {

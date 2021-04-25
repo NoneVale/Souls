@@ -3,7 +3,7 @@ version: ${version}
 main: net.nighthawkempires.souls.SoulsPlugin
 description: Nighthawk Empires' Souls Plugin.
 author: NoneVale_
-api-version: 1.15
+api-version: 1.16
 depend: [Core]
 commands:
   extractsouls:

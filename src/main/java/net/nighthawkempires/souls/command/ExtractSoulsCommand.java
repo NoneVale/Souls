@@ -2,6 +2,8 @@ package net.nighthawkempires.souls.command;
 
 import net.nighthawkempires.souls.items.SoulSword;
 import net.nighthawkempires.souls.user.UserModel;
+import net.nighthawkempires.souls.util.ParticleUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -35,23 +37,23 @@ public class ExtractSoulsCommand implements CommandExecutor {
                     ItemStack itemStack = player.getInventory().getItemInMainHand();
                     if (itemStack != null && itemStack.getType() != Material.AIR) {
                         if (!SoulSword.isSoulSword(itemStack)) {
-                            player.sendMessage(getMessages().getChatTag(NOT_SOUL_SWORD));
+                            player.sendMessage(getMessages().getChatMessage(ChatColor.GRAY + "The equipped item is not a soul sword."));
                             return true;
                         }
 
                         int souls = SoulSword.getPlayerSouls(itemStack);
 
                         if (souls == 0) {
-                            player.sendMessage(getMessages().getChatTag(NO_SOULS_ON_SWORD));
+                            player.sendMessage(getMessages().getChatMessage(ChatColor.GRAY + "The equipped soul sword does not contain any Player Souls."));
                             return true;
                         }
-
 
                         userModel.addPlayerSouls(souls);
                         ItemStack newItemStack = setPlayerSouls(itemStack, 0);
                         player.getInventory().setItemInMainHand(newItemStack);
-                        player.sendMessage(getMessages().getChatTag(EXTRACT_FROM_SWORD)
-                                .replaceAll("%AMOUNT%", String.valueOf(souls)));
+                        player.sendMessage(getMessages().getChatMessage(ChatColor.GRAY + "You have extracted "
+                                + ChatColor.GOLD + souls + ChatColor.GRAY + " Player Souls from the equipped soul sword."));
+                        ParticleUtil.coneEffect(player);
                         return true;
                     } else {
                         player.sendMessage(getMessages().getChatTag(NOT_SOUL_SWORD));

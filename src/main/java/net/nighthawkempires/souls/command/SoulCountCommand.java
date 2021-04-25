@@ -31,7 +31,7 @@ public class SoulCountCommand implements CommandExecutor {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {
                         if (SoulSword.isSoulSword(itemStack)) {
                             int souls = SoulSword.getPlayerSouls(itemStack);
-                            player.sendMessage(getMessages().getChatMessage(GRAY + "The Soul Sword in your hand contains " + GOLD + souls + GRAY + " Player Souls."));
+                            player.sendMessage(getMessages().getChatMessage(GRAY + "The equipped soul sword contains " + GOLD + souls + GRAY + " Player Souls."));
                             return true;
                         }
                     }

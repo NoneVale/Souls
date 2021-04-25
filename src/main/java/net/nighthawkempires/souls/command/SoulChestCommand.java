@@ -5,6 +5,7 @@ import net.nighthawkempires.core.lang.Messages;
 import net.nighthawkempires.souls.SoulsPlugin;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,8 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import static net.nighthawkempires.core.CorePlugin.*;
 import static net.nighthawkempires.core.lang.Messages.*;
 import static net.nighthawkempires.souls.messages.SoulsMessages.*;
-import static org.bukkit.ChatColor.DARK_GRAY;
-import static org.bukkit.ChatColor.GRAY;
+import static org.bukkit.ChatColor.*;
 
 public class SoulChestCommand implements CommandExecutor {
 
@@ -85,11 +85,10 @@ public class SoulChestCommand implements CommandExecutor {
                         itemStack.setAmount(amount);
 
                         player.getInventory().addItem(itemStack);
-                        target.sendMessage(getMessages().getChatTag(RECIEVE_SOULCHEST)
-                                .replaceAll("%AMOUNT%", String.valueOf(amount)));
-                        player.sendMessage(getMessages().getChatTag(GIVE_SOULCHEST)
-                                .replaceAll("%AMOUNT%", String.valueOf(amount))
-                                .replaceAll("%PLAYER%", target.getName()));
+                        target.sendMessage(getMessages().getChatMessage(GRAY + "You have been given " + ChatColor.GOLD + amount
+                                + GRAY + " soul chests."));
+                        player.sendMessage(getMessages().getChatMessage(GRAY + "You have given " + ChatColor.GOLD + amount
+                                + GRAY + " soul chests to " + GREEN + target.getName() + GRAY + "."));
                         return true;
                     } else {
                         player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));

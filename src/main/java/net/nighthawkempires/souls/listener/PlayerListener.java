@@ -1,5 +1,6 @@
 package net.nighthawkempires.souls.listener;
 
+import com.google.common.collect.Lists;
 import net.nighthawkempires.core.CorePlugin;
 import net.nighthawkempires.core.cooldown.Cooldown;
 import net.nighthawkempires.core.entity.Entities;
@@ -10,19 +11,22 @@ import net.nighthawkempires.souls.items.SoulChest;
 import net.nighthawkempires.souls.items.SoulSword;
 import net.nighthawkempires.souls.user.UserModel;
 import net.nighthawkempires.souls.util.ParticleUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -111,7 +115,7 @@ public class PlayerListener implements Listener {
                         ItemStack newItemStack = setPlayerSouls(itemStack, getPlayerSouls(itemStack) + removes);
                         player.getInventory().setItemInMainHand(newItemStack);
                         userModel.removePlayerSouls(removes);
-                        //ParticleUtil.coneEffect(player);
+                        ParticleUtil.coneEffect(player);
                         player.sendMessage(getMessages().getChatMessage(GRAY + "You have harvested " + GOLD + removes + GRAY + " Player Souls by killing "
                                 + GREEN + killed.getName() + GRAY + "."));
                     }
@@ -175,6 +179,48 @@ public class PlayerListener implements Listener {
             if (SoulChest.isSoulChest(itemStack)) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void villager(VillagerCareerChangeEvent event) {
+        Villager villager = event.getEntity();
+
+        if (event.getProfession() != Villager.Profession.NITWIT
+                && event.getProfession() != Villager.Profession.NONE) {
+            MerchantRecipe recipe = new MerchantRecipe(new ItemStack(Material.DIAMOND), 32);
+            recipe.addIngredient(new ItemStack(Material.STICK));
+            MerchantRecipe recipe2 = new MerchantRecipe(new ItemStack(Material.BOOK), 32);
+            recipe2.addIngredient(new ItemStack(Material.DIRT, 3));
+            villager.setRecipes(Lists.newArrayList(recipe, recipe2));
+            Bukkit.getLogger().info(villager.toString());
+            Bukkit.getLogger().info(villager.getRecipeCount() + "");
+        }
+    }
+
+    @EventHandler
+    public void interact(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof Villager) {
+            Villager villager = (Villager) event.getRightClicked();
+
+            if (villager.getProfession() != Villager.Profession.NITWIT
+                    && villager.getProfession() != Villager.Profession.NONE) {
+                MerchantRecipe recipe = new MerchantRecipe(new ItemStack(Material.DIAMOND), 32);
+                recipe.addIngredient(new ItemStack(Material.STICK));
+                MerchantRecipe recipe2 = new MerchantRecipe(new ItemStack(Material.BOOK), 32);
+                recipe2.addIngredient(new ItemStack(Material.DIRT, 64));
+                recipe2.addIngredient(new ItemStack(Material.DIRT, 36));
+                villager.setRecipes(Lists.newArrayList(recipe, recipe2));
+                Bukkit.getLogger().info(villager.toString());
+                Bukkit.getLogger().info(villager.getRecipeCount() + "");
+            }
+        }
+    }
+
+    @EventHandler
+    public void openInv(InventoryOpenEvent event) {
+        if (event.getView().getTopInventory().getType() == InventoryType.MERCHANT) {
+            event.getPlayer().sendMessage("opened villager inv");
         }
     }
 }

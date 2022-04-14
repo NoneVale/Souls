@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import static net.nighthawkempires.core.CorePlugin.getCommandManager;
 import static net.nighthawkempires.souls.SoulsPlugin.getUserRegistry;
 import static net.nighthawkempires.core.CorePlugin.getMessages;
 import static net.nighthawkempires.core.lang.Messages.CHAT_FOOTER;
@@ -25,9 +26,14 @@ import static org.bukkit.ChatColor.*;
 
 public class SoulTopCommand implements CommandExecutor {
 
+    public SoulTopCommand() {
+        getCommandManager().registerCommands("soultop", new String[] {
+                "ne.souls"
+        });
+    }
+
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
 
             if (!player.hasPermission("ne.souls")) {
                 player.sendMessage(CorePlugin.getMessages().getChatTag(Messages.NO_PERMS));
@@ -35,27 +41,27 @@ public class SoulTopCommand implements CommandExecutor {
             }
 
             switch (args.length) {
-                case 0:
+                case 0 -> {
                     sendSoulTop(sender, 1);
                     return true;
-                case 1:
+                }
+                case 1 -> {
                     if (!NumberUtils.isDigits(args[0])) {
                         player.sendMessage(getMessages().getChatMessage(GRAY + "The page must be a valid number."));
                         return true;
                     }
-
                     int page = Integer.parseInt(args[0]);
-
                     if (page < 1 || page > getTotalSoulPages()) {
                         player.sendMessage(getMessages().getChatMessage(GRAY + "That is not a valid pages.  The range is 1 - " + getTotalSoulPages() + "."));
                         return true;
                     }
-
                     sendSoulTop(player, page);
                     return true;
-                default:
+                }
+                default -> {
                     player.sendMessage(CorePlugin.getMessages().getChatTag(Messages.INVALID_SYNTAX));
                     return true;
+                }
             }
         }
         return false;
@@ -85,16 +91,34 @@ public class SoulTopCommand implements CommandExecutor {
         for (int i = start; i < finish; i++) {
             UserModel user = guilds.get(i);
             UUID uuid = UUID.fromString(user.getKey());
+            net.nighthawkempires.core.user.UserModel main = CorePlugin.getUserRegistry().getUser(uuid);
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
 
             StringBuilder spacer = new StringBuilder();
-            int spaces = 25 - offlinePlayer.getName().length();
-            for (int j = 0; j < spaces; j++)
-                spacer.append(" ");
+            String name = "";
+            if (offlinePlayer.getName() != null) {
+                name = offlinePlayer.getName();
+
+                int spaces = 25 - offlinePlayer.getName().length();
+                for (int j = 0; j < spaces; j++)
+                    spacer.append(" ");
+
+            } else if (offlinePlayer.getName() == null) {
+                if (main.getUserName() == null || main.getUserName().equals("null") || main.getUserName().length() == 0) {
+                    name = main.getKey();
+                } else {
+                    name = main.getUserName();
+
+                    int spaces = 25 - main.getUserName().length();
+                    for (int j = 0; j < spaces; j++)
+                        spacer.append(" ");
+
+                }
+            }
 
             int pos = i + 1;
-            sender.sendMessage(GOLD + "" + pos + DARK_GRAY + ". " + GREEN + offlinePlayer.getName()
-                    + spacer.toString() + DARK_GRAY + " - Player Souls" + GRAY + ": " + GOLD + user.getPlayerSouls());
+            sender.sendMessage(GOLD + "" + pos + DARK_GRAY + ". " + GREEN + name
+                    + spacer + DARK_GRAY + " - Player Souls" + GRAY + ": " + GOLD + user.getPlayerSouls());
         }
 
         sender.sendMessage(getMessages().getMessage(CHAT_FOOTER));

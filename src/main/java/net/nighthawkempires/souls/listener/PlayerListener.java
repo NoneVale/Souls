@@ -84,9 +84,9 @@ public class PlayerListener implements Listener {
 
                 userModel.setMobSouls(userModel.getMobSouls() + (droppedSouls * userModel.getLevel()));
 
-                if (userModel.getMobSouls() >= 100) {
+                if (userModel.getMobSouls() >= 25) {
                     userModel.setPlayerSouls(userModel.getPlayerSouls() + 1);
-                    userModel.setMobSouls(userModel.getMobSouls() - 100);
+                    userModel.setMobSouls(userModel.getMobSouls() - 25);
                 }
             }
         }
@@ -179,48 +179,6 @@ public class PlayerListener implements Listener {
             if (SoulChest.isSoulChest(itemStack)) {
                 event.setCancelled(true);
             }
-        }
-    }
-
-    @EventHandler
-    public void villager(VillagerCareerChangeEvent event) {
-        Villager villager = event.getEntity();
-
-        if (event.getProfession() != Villager.Profession.NITWIT
-                && event.getProfession() != Villager.Profession.NONE) {
-            MerchantRecipe recipe = new MerchantRecipe(new ItemStack(Material.DIAMOND), 32);
-            recipe.addIngredient(new ItemStack(Material.STICK));
-            MerchantRecipe recipe2 = new MerchantRecipe(new ItemStack(Material.BOOK), 32);
-            recipe2.addIngredient(new ItemStack(Material.DIRT, 3));
-            villager.setRecipes(Lists.newArrayList(recipe, recipe2));
-            Bukkit.getLogger().info(villager.toString());
-            Bukkit.getLogger().info(villager.getRecipeCount() + "");
-        }
-    }
-
-    @EventHandler
-    public void interact(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked() instanceof Villager) {
-            Villager villager = (Villager) event.getRightClicked();
-
-            if (villager.getProfession() != Villager.Profession.NITWIT
-                    && villager.getProfession() != Villager.Profession.NONE) {
-                MerchantRecipe recipe = new MerchantRecipe(new ItemStack(Material.DIAMOND), 32);
-                recipe.addIngredient(new ItemStack(Material.STICK));
-                MerchantRecipe recipe2 = new MerchantRecipe(new ItemStack(Material.BOOK), 32);
-                recipe2.addIngredient(new ItemStack(Material.DIRT, 64));
-                recipe2.addIngredient(new ItemStack(Material.DIRT, 36));
-                villager.setRecipes(Lists.newArrayList(recipe, recipe2));
-                Bukkit.getLogger().info(villager.toString());
-                Bukkit.getLogger().info(villager.getRecipeCount() + "");
-            }
-        }
-    }
-
-    @EventHandler
-    public void openInv(InventoryOpenEvent event) {
-        if (event.getView().getTopInventory().getType() == InventoryType.MERCHANT) {
-            event.getPlayer().sendMessage("opened villager inv");
         }
     }
 }

@@ -10,16 +10,20 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.tags.ItemTagType;
 
 import static net.nighthawkempires.souls.SoulsPlugin.getUserRegistry;
 import static net.nighthawkempires.core.CorePlugin.*;
 import static net.nighthawkempires.core.lang.Messages.*;
-import static net.nighthawkempires.souls.items.SoulSword.getPlayerSouls;
 import static net.nighthawkempires.souls.items.SoulSword.setPlayerSouls;
 import static net.nighthawkempires.souls.messages.SoulsMessages.*;
 
 public class ExtractSoulsCommand implements CommandExecutor {
+
+    public ExtractSoulsCommand() {
+        getCommandManager().registerCommands("extractsouls", new String[] {
+                "ne.souls"
+        });
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

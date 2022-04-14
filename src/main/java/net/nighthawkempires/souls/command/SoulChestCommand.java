@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -20,6 +21,12 @@ import static org.bukkit.ChatColor.*;
 
 public class SoulChestCommand implements CommandExecutor {
 
+    public SoulChestCommand() {
+        getCommandManager().registerCommands("soulchest", new String[] {
+                "ne.souls.admin"
+        });
+    }
+
     private String[] help = new String[] {
             getMessages().getMessage(CHAT_HEADER),
             DARK_GRAY + "Command" + GRAY + ": Soul Chest    " + DARK_GRAY + "    [Optional], <Required>",
@@ -29,9 +36,7 @@ public class SoulChestCommand implements CommandExecutor {
     };
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-
+        if (sender instanceof Player player) {
             if (!player.hasPermission("ne.souls.admin")) {
                 player.sendMessage(getMessages().getChatTag(NO_PERMS));
                 return true;
@@ -96,6 +101,68 @@ public class SoulChestCommand implements CommandExecutor {
                     }
                 default:
                     player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
+                    return true;
+            }
+        } else if (sender instanceof ConsoleCommandSender) {
+            switch (args.length) {
+                case 0:
+                    sender.sendMessage(help);
+                    return true;
+                case 2:
+                    if (args[0].toLowerCase().equals("give")) {
+                        String name = args[1];
+                        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+                        if (!offlinePlayer.isOnline()) {
+                            sender.sendMessage(getMessages().getChatTag(PLAYER_NOT_ONLINE));
+                            return true;
+                        }
+
+                        Player target = offlinePlayer.getPlayer();
+
+                        target.getInventory().addItem(SoulsPlugin.getSoulsConfig().soulChest.toItemStack());
+                        target.sendMessage(getMessages().getChatTag(RECIEVE_SOULCHEST)
+                                .replaceAll("%AMOUNT%", String.valueOf(1)));
+                        sender.sendMessage(getMessages().getChatTag(GIVE_SOULCHEST)
+                                .replaceAll("%AMOUNT%", String.valueOf(1))
+                                .replaceAll("%PLAYER%", target.getName()));
+                        return true;
+                    } else {
+                        sender.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
+                        return true;
+                    }
+                case 3:
+                    if (args[0].toLowerCase().equals("give")) {
+                        String name = args[1];
+                        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+                        if (!offlinePlayer.isOnline()) {
+                            sender.sendMessage(getMessages().getChatTag(PLAYER_NOT_ONLINE));
+                            return true;
+                        }
+
+                        Player target = offlinePlayer.getPlayer();
+
+                        if (!NumberUtils.isDigits(args[2])) {
+                            sender.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
+                            return true;
+                        }
+
+                        int amount = Integer.parseInt(args[2]);
+
+                        ItemStack itemStack = SoulsPlugin.getSoulsConfig().soulChest.toItemStack();
+                        itemStack.setAmount(amount);
+
+                        target.getInventory().addItem(itemStack);
+                        target.sendMessage(getMessages().getChatMessage(GRAY + "You have been given " + ChatColor.GOLD + amount
+                                + GRAY + " soul chests."));
+                        sender.sendMessage(getMessages().getChatMessage(GRAY + "You have given " + ChatColor.GOLD + amount
+                                + GRAY + " soul chests to " + GREEN + target.getName() + GRAY + "."));
+                        return true;
+                    } else {
+                        sender.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
+                        return true;
+                    }
+                default:
+                    sender.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
                     return true;
             }
         }

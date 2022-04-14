@@ -18,9 +18,14 @@ import static org.bukkit.ChatColor.*;
 
 public class SoulsRankupCommand implements CommandExecutor {
 
+    public SoulsRankupCommand() {
+        getCommandManager().registerCommands("soulsrankup", new String[] {
+                "ne.souls"
+        });
+    }
+
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
             UserModel userModel = getUserRegistry().getUser(player.getUniqueId());
 
             if (!player.hasPermission("ne.souls")) {
@@ -28,32 +33,30 @@ public class SoulsRankupCommand implements CommandExecutor {
                 return true;
             }
 
-            switch (args.length) {
-                case 0:
-                    int nextLvel = userModel.getLevel() + 1;
+            if (args.length == 0) {
+                int nextLevel = userModel.getLevel() + 1;
 
-                    if (nextLvel > getSoulsConfig().highestLevel()) {
-                        player.sendMessage(getMessages().getChatMessage(GRAY + "You have already reached the max Soul Level."));
-                        return true;
-                    }
-
-                    int needed = getSoulsConfig().getRequiredSouls(nextLvel);
-
-                    if (userModel.getPlayerSouls() < needed) {
-                        int need = needed - userModel.getPlayerSouls();
-                        player.sendMessage(getMessages().getChatMessage(GRAY + "You need " + GOLD + need + GRAY
-                                + " more Player Souls to be able to rankup."));
-                        return true;
-                    }
-
-                    userModel.removePlayerSouls(needed);
-                    userModel.setLevel(nextLvel);
-                    player.sendMessage(getMessages().getChatMessage(GRAY + "You are now Soul Level " + GOLD + nextLvel + GRAY + "."));
+                if (nextLevel > getSoulsConfig().highestLevel()) {
+                    player.sendMessage(getMessages().getChatMessage(GRAY + "You have already reached the max Soul Level."));
                     return true;
-                default:
-                    player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
+                }
+
+                int needed = getSoulsConfig().getRequiredSouls(nextLevel);
+
+                if (userModel.getPlayerSouls() < needed) {
+                    int need = needed - userModel.getPlayerSouls();
+                    player.sendMessage(getMessages().getChatMessage(GRAY + "You need " + GOLD + need + GRAY
+                            + " more Player Souls to be able to rankup."));
                     return true;
+                }
+
+                userModel.removePlayerSouls(needed);
+                userModel.setLevel(nextLevel);
+                player.sendMessage(getMessages().getChatMessage(GRAY + "You are now Soul Level " + GOLD + nextLevel + GRAY + "."));
+                return true;
             }
+            player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
+            return true;
         }
         return false;
     }

@@ -23,12 +23,9 @@ import net.nighthawkempires.souls.user.registry.MUserRegistry;
 import net.nighthawkempires.souls.user.registry.UserRegistry;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
 import static net.nighthawkempires.core.CorePlugin.*;
 
@@ -81,6 +78,7 @@ public class SoulsPlugin extends JavaPlugin {
                 registerEnchantments();
                 registerKeys();
                 registerListeners();
+                registerTabCompleters();
 
                 CorePlugin.getScoreboardManager().addScoreboard(new SoulsScoreboard());
             } catch (Exception exception) {

@@ -38,7 +38,7 @@ public class InventoryData {
             size += 9;
         }
 
-        Inventory inventory = Bukkit.createInventory(null, size, "Soul SHop");
+        Inventory inventory = Bukkit.createInventory(null, size, "Soul Shop");
 
         for (int i = 0; i < layout.size(); i++) {
             String s = layout.get(i);

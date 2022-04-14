@@ -1,7 +1,6 @@
 package net.nighthawkempires.souls.tabcompleters;
 
 import com.google.common.collect.Lists;
-import net.nighthawkempires.souls.SoulsPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -17,25 +16,23 @@ public class SoulTopTabCompleter implements TabCompleter {
 
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> completions = Lists.newArrayList();
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-
-            if (!player.hasPermission("ne.souls")) {
-                return completions;
-            }
+        if (sender instanceof Player player) {
+            if (!player.hasPermission("ne.souls")) return completions;
 
             switch (args.length) {
-                case 1:
-                    List<String> arggs = Lists.newArrayList();
-                    int pages = (int) Math.ceil((double) getUserRegistry().getUsers().size() / 10);
-                    for (int i = 0; i < pages; i++) {
-                        arggs.add((i + 1) + "");
-                    }
-                    StringUtil.copyPartialMatches(args[0], arggs, completions);
+                case 1 -> {
+                     int pages = (int) Math.ceil((double) getUserRegistry().getUsers().size() / 10);
+                     List<String> options = Lists.newArrayList();
+                     for (int i = 0; i < pages; i++) {
+                         options.add(String.valueOf(i + 1));
+                     }
+                    StringUtil.copyPartialMatches(args[0], options, completions);
                     Collections.sort(completions);
                     return completions;
-                default:
+                }
+                default -> {
                     return completions;
+                }
             }
         }
         return completions;

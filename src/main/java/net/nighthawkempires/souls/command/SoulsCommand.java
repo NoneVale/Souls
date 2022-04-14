@@ -1,7 +1,5 @@
 package net.nighthawkempires.souls.command;
 
-import net.nighthawkempires.core.CorePlugin;
-import net.nighthawkempires.core.lang.Messages;
 import net.nighthawkempires.souls.user.UserModel;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.Bukkit;
@@ -17,9 +15,14 @@ import static net.nighthawkempires.core.CorePlugin.*;
 import static net.nighthawkempires.souls.SoulsPlugin.getUserRegistry;
 import static net.nighthawkempires.core.lang.Messages.*;
 import static org.bukkit.ChatColor.*;
-import static org.bukkit.ChatColor.RED;
 
 public class SoulsCommand implements CommandExecutor {
+
+    public SoulsCommand() {
+        getCommandManager().registerCommands("souls", new String[] {
+                "ne.souls", "ne.souls.admin"
+        });
+    }
 
     private String[] help = new String[] {
             getMessages().getMessage(CHAT_HEADER),
@@ -36,8 +39,7 @@ public class SoulsCommand implements CommandExecutor {
     };
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
             UserModel userModel = getUserRegistry().getUser(player.getUniqueId());
 
             if (!player.hasPermission("ne.souls") && !player.hasPermission("ne.souls.admin")) {
@@ -50,25 +52,22 @@ public class SoulsCommand implements CommandExecutor {
                     player.sendMessage(getSoulBalance(player.getUniqueId()));
                     return true;
                 case 1:
-                    switch (args[0].toLowerCase()) {
-                        case "help":
-                            if (!player.hasPermission("ne.souls.admin")) {
-                                player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
-                                return true;
-                            }
-
-                            player.sendMessage(help);
+                    if ("help".equals(args[0].toLowerCase())) {
+                        if (!player.hasPermission("ne.souls.admin")) {
+                            player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
                             return true;
-                        default:
-                            String name = args[0];
-                            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-                            if (!getUserRegistry().userExists(offlinePlayer.getUniqueId())) {
-                                player.sendMessage(getMessages().getChatTag(PLAYER_NOT_FOUND));
-                                return true;
-                            }
-
-                            player.sendMessage(getSoulBalance(offlinePlayer.getUniqueId()));
+                        }
+                        player.sendMessage(help);
+                        return true;
+                    } else {
+                        String name = args[0];
+                        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+                        if (!getUserRegistry().userExists(offlinePlayer.getUniqueId())) {
+                            player.sendMessage(getMessages().getChatTag(PLAYER_NOT_FOUND));
                             return true;
+                        }
+                        player.sendMessage(getSoulBalance(offlinePlayer.getUniqueId()));
+                        return true;
                     }
                 case 2:
                     if (!player.hasPermission("ne.souls.admin")) {
@@ -76,30 +75,32 @@ public class SoulsCommand implements CommandExecutor {
                         return true;
                     }
 
-                    switch (args[0].toLowerCase()) {
-                        case "reset":
-                            switch (args[1].toLowerCase()) {
-                                case "mob":
-                                    userModel.setMobSouls(0);
-                                    player.sendMessage(getMessages().getChatMessage(GRAY + "You have reset your Mob Souls."));
-                                    return true;
-                                case "player":
-                                    userModel.setPlayerSouls(0);
-                                    player.sendMessage(getMessages().getChatMessage(GRAY + "You have reset your Player Souls."));
-                                    return true;
-                                case "all":
-                                    userModel.setMobSouls(0);
-                                    userModel.setPlayerSouls(0);
-                                    player.sendMessage(getMessages().getChatMessage(GRAY + "You have reset your Mob and Player Souls."));
-                                    return true;
-                                default:
-                                    player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
-                                    return true;
+                    if ("reset".equals(args[0].toLowerCase())) {
+                        switch (args[1].toLowerCase()) {
+                            case "mob" -> {
+                                userModel.setMobSouls(0);
+                                player.sendMessage(getMessages().getChatMessage(GRAY + "You have reset your Mob Souls."));
+                                return true;
                             }
-                        default:
-                            player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
-                            return true;
+                            case "player" -> {
+                                userModel.setPlayerSouls(0);
+                                player.sendMessage(getMessages().getChatMessage(GRAY + "You have reset your Player Souls."));
+                                return true;
+                            }
+                            case "all" -> {
+                                userModel.setMobSouls(0);
+                                userModel.setPlayerSouls(0);
+                                player.sendMessage(getMessages().getChatMessage(GRAY + "You have reset your Mob and Player Souls."));
+                                return true;
+                            }
+                            default -> {
+                                player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
+                                return true;
+                            }
+                        }
                     }
+                    player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
+                    return true;
                 case 3:
                     if (!player.hasPermission("ne.souls.admin")) {
                         player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
@@ -118,7 +119,7 @@ public class SoulsCommand implements CommandExecutor {
                             userModel = getUserRegistry().getUser(offlinePlayer.getUniqueId());
 
                             switch (args[2].toLowerCase()) {
-                                case "mob":
+                                case "mob" -> {
                                     userModel.setMobSouls(0);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have reset " + GREEN + offlinePlayer.getName() + "'s"
                                             + " Mob Souls."));
@@ -127,7 +128,8 @@ public class SoulsCommand implements CommandExecutor {
                                         return true;
                                     }
                                     return true;
-                                case "player":
+                                }
+                                case "player" -> {
                                     userModel.setPlayerSouls(0);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have reset " + GREEN + offlinePlayer.getName() + "'s"
                                             + " Player Souls."));
@@ -136,7 +138,8 @@ public class SoulsCommand implements CommandExecutor {
                                         return true;
                                     }
                                     return true;
-                                case "all":
+                                }
+                                case "all" -> {
                                     userModel.setMobSouls(0);
                                     userModel.setPlayerSouls(0);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have reset " + GREEN + offlinePlayer.getName() + "'s"
@@ -146,87 +149,92 @@ public class SoulsCommand implements CommandExecutor {
                                         return true;
                                     }
                                     return true;
-                                default:
+                                }
+                                default -> {
                                     player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
                                     return true;
+                                }
                             }
                         case "set":
                             switch (args[1].toLowerCase()) {
-                                case "mob":
+                                case "mob" -> {
                                     if (!NumberUtils.isDigits(args[2])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
                                     int amount = Integer.parseInt(args[2]);
                                     userModel.setMobSouls(amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have set your Mob Souls to " + GOLD + amount + GRAY + "."));
                                     return true;
-                                case "player":
+                                }
+                                case "player" -> {
                                     if (!NumberUtils.isDigits(args[2])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
-                                    amount = Integer.parseInt(args[2]);
+                                    int amount = Integer.parseInt(args[2]);
                                     userModel.setPlayerSouls(amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have set your Player Souls to " + GOLD + amount + GRAY + "."));
                                     return true;
-                                default:
+                                }
+                                default -> {
                                     player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
                                     return true;
+                                }
                             }
                         case "add":
                             switch (args[1].toLowerCase()) {
-                                case "mob":
+                                case "mob" -> {
                                     if (!NumberUtils.isDigits(args[2])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
                                     int amount = Integer.parseInt(args[2]);
                                     userModel.setMobSouls(userModel.getMobSouls() + amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have added " + GOLD + amount + GRAY + " souls to your Mob Souls Balance."));
                                     return true;
-                                case "player":
+                                }
+                                case "player" -> {
                                     if (!NumberUtils.isDigits(args[2])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
-                                    amount = Integer.parseInt(args[2]);
+                                    int amount = Integer.parseInt(args[2]);
                                     userModel.setPlayerSouls(userModel.getPlayerSouls() + amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have added " + GOLD + amount + GRAY + " souls to your Player Souls Balance."));
                                     return true;
-                                default:
+                                }
+                                default -> {
                                     player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
                                     return true;
+                                }
                             }
                         case "remove":
                             switch (args[1].toLowerCase()) {
-                                case "mob":
+                                case "mob" -> {
                                     if (!NumberUtils.isDigits(args[2])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
                                     int amount = Integer.parseInt(args[2]);
                                     userModel.setMobSouls(userModel.getMobSouls() - amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have removed " + GOLD + amount + GRAY + " souls from your Mob Souls Balance."));
                                     return true;
-                                case "player":
+                                }
+                                case "player" -> {
                                     if (!NumberUtils.isDigits(args[2])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
-                                    amount = Integer.parseInt(args[2]);
+                                    int amount = Integer.parseInt(args[2]);
                                     userModel.setPlayerSouls(userModel.getPlayerSouls() - amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have removed " + GOLD + amount + GRAY + " souls from your Player Souls Balance."));
                                     return true;
-                                default:
+                                }
+                                default -> {
                                     player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
                                     return true;
+                                }
                             }
                         default:
                             player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
@@ -250,12 +258,11 @@ public class SoulsCommand implements CommandExecutor {
                             userModel = getUserRegistry().getUser(offlinePlayer.getUniqueId());
 
                             switch (args[2].toLowerCase()) {
-                                case "mob":
+                                case "mob" -> {
                                     if (!NumberUtils.isDigits(args[3])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
                                     int amount = Integer.parseInt(args[3]);
                                     userModel.setMobSouls(amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have set " + GREEN + offlinePlayer.getName() + "'s" + GRAY +
@@ -265,13 +272,13 @@ public class SoulsCommand implements CommandExecutor {
                                                 GOLD + amount + GRAY + "."));
                                     }
                                     return true;
-                                case "player":
+                                }
+                                case "player" -> {
                                     if (!NumberUtils.isDigits(args[3])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
-                                    amount = Integer.parseInt(args[3]);
+                                    int amount = Integer.parseInt(args[3]);
                                     userModel.setPlayerSouls(amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have set " + GREEN + offlinePlayer.getName() + "'s" + GRAY +
                                             " Player Souls to " + GOLD + amount + GRAY + "."));
@@ -280,9 +287,11 @@ public class SoulsCommand implements CommandExecutor {
                                                 GOLD + String.valueOf(amount) + GRAY + "."));
                                     }
                                     return true;
-                                default:
+                                }
+                                default -> {
                                     player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
                                     return true;
+                                }
                             }
                         case "add":
                             name = args[1];
@@ -295,12 +304,11 @@ public class SoulsCommand implements CommandExecutor {
                             userModel = getUserRegistry().getUser(offlinePlayer.getUniqueId());
 
                             switch (args[2].toLowerCase()) {
-                                case "mob":
+                                case "mob" -> {
                                     if (!NumberUtils.isDigits(args[3])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
                                     int amount = Integer.parseInt(args[3]);
                                     userModel.setMobSouls(userModel.getMobSouls() + amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have added " + GOLD + amount + GRAY + " souls to " +
@@ -310,13 +318,13 @@ public class SoulsCommand implements CommandExecutor {
                                                 + GRAY + " souls have been added to your Mob Souls Balance."));
                                     }
                                     return true;
-                                case "player":
+                                }
+                                case "player" -> {
                                     if (!NumberUtils.isDigits(args[3])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
-                                    amount = Integer.parseInt(args[3]);
+                                    int amount = Integer.parseInt(args[3]);
                                     userModel.setPlayerSouls(userModel.getPlayerSouls() + amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have added " + GOLD + amount + GRAY + " souls to " +
                                             GREEN + offlinePlayer.getPlayer().getName() + "'s" + GRAY + " Player Souls Balance."));
@@ -325,9 +333,11 @@ public class SoulsCommand implements CommandExecutor {
                                                 + GRAY + " souls have been added to your Player Souls Balance."));
                                     }
                                     return true;
-                                default:
+                                }
+                                default -> {
                                     player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
                                     return true;
+                                }
                             }
                         case "remove":
                             name = args[1];
@@ -340,39 +350,40 @@ public class SoulsCommand implements CommandExecutor {
                             userModel = getUserRegistry().getUser(offlinePlayer.getUniqueId());
 
                             switch (args[2].toLowerCase()) {
-                                case "mob":
+                                case "mob" -> {
                                     if (!NumberUtils.isDigits(args[3])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
                                     int amount = Integer.parseInt(args[3]);
                                     userModel.setMobSouls(userModel.getMobSouls() - amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have removed " + GOLD + amount + GRAY + " souls from " +
-                                            GREEN + offlinePlayer.getPlayer().getName() + "'s" + GRAY +" Mob Souls Balance."));
+                                            GREEN + offlinePlayer.getPlayer().getName() + "'s" + GRAY + " Mob Souls Balance."));
                                     if (offlinePlayer.isOnline()) {
                                         offlinePlayer.getPlayer().sendMessage(getMessages().getChatMessage(GOLD + String.valueOf(amount)
                                                 + GRAY + " souls have been removed from your Mob Souls Balance."));
                                     }
                                     return true;
-                                case "player":
+                                }
+                                case "player" -> {
                                     if (!NumberUtils.isDigits(args[3])) {
                                         player.sendMessage(getMessages().getChatMessage(GRAY + "The amount must be a valid number."));
                                         return true;
                                     }
-
-                                    amount = Integer.parseInt(args[3]);
+                                    int amount = Integer.parseInt(args[3]);
                                     userModel.setPlayerSouls(userModel.getPlayerSouls() - amount);
                                     player.sendMessage(getMessages().getChatMessage(GRAY + "You have removed " + GOLD + amount + GRAY + " souls from " +
-                                            GREEN + offlinePlayer.getPlayer().getName() + "'s" + GRAY +" Player Souls Balance."));
+                                            GREEN + offlinePlayer.getPlayer().getName() + "'s" + GRAY + " Player Souls Balance."));
                                     if (offlinePlayer.isOnline()) {
                                         offlinePlayer.getPlayer().sendMessage(getMessages().getChatMessage(GOLD + String.valueOf(amount)
                                                 + GRAY + " souls have been removed from your Player Souls Balance."));
                                     }
                                     return true;
-                                default:
+                                }
+                                default -> {
                                     player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
                                     return true;
+                                }
                             }
                         default:
                             player.sendMessage(getMessages().getChatTag(INVALID_SYNTAX));
